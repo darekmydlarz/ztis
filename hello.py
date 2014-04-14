@@ -1,47 +1,44 @@
+import sys
 import database
-from flask import Flask
+from bson import json_util
+from flask import Flask, json
 from flask.ext.restful import reqparse, abort, Api, Resource
 
 app = Flask(__name__)
 api = Api(app)
 
-data = {}
+#data = {}
+
+data = database.get_data_collection()
 
 parser = reqparse.RequestParser()
 parser.add_argument('data', type = str)
 
 def abort_if_doesnt_exist(data_id):
-	if data_id not in data:
+	if database.find(data_id) is None:
 		abort(404, message = "Data {} doesn't exist".format(data_id))
+
+def json_dump(obj):
+	return json.dumps(obj, default=json_util.default)
 
 class Data(Resource):
 	def get(self, data_id):
 		abort_if_doesnt_exist(data_id)
-		return data[data_id]
-
-	def delete(self, data_id):
-		abort_if_doesnt_exist(data_id)
-		del data[data_id]
-		return '', 204
-
-	def put(self, data_id):
-		args = parser.parse_args()
-		updated_data = {'data': args['data']}
-		data[data_id] = updated_data
-		return data, 201
+		return json_dump(database.find(data_id))
 
 class DataList(Resource):
 	def get(self):
-		return data;
+		result = []
+		for row in data.find():
+			result.append(json_dump(row))
+		return result
 
 	def post(self):
 		args = parser.parse_args()
-		data_id = len(data) + 1
-		data[data_id] = {'data': args['data']}
-		return data[data_id], 201
+		data_id = database.insert(args['data'])
+		return json_dump(data_id), 201
 
-
-api.add_resource(Data, '/data/<int:data_id>')
+api.add_resource(Data, '/data/<string:data_id>')
 api.add_resource(DataList, '/', '/data')
 
 if __name__ == '__main__':
