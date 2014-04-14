@@ -7,10 +7,6 @@ from flask.ext.restful import reqparse, abort, Api, Resource
 app = Flask(__name__)
 api = Api(app)
 
-#data = {}
-
-data = database.get_data_collection()
-
 parser = reqparse.RequestParser()
 parser.add_argument('data', type = str)
 
@@ -29,7 +25,7 @@ class Data(Resource):
 class DataList(Resource):
 	def get(self):
 		result = []
-		for row in data.find():
+		for row in database.find_all():
 			result.append(json_dump(row))
 		return result
 

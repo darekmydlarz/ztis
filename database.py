@@ -12,6 +12,9 @@ collection = db.data
 def get_data_collection():
   return collection;
 
+def find_all():
+  return collection.find()
+
 def find(data_id):
   try:
     object_id = ObjectId(data_id)
