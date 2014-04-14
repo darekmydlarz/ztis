@@ -1,4 +1,4 @@
-#import database
+import database
 from flask import Flask
 from flask.ext.restful import reqparse, abort, Api, Resource
 
