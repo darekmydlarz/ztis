@@ -1,5 +1,6 @@
 import os
 import pymongo
+import datetime
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
@@ -23,4 +24,4 @@ def find(data_id):
   return collection.find_one({"_id": object_id})
 
 def insert(data):
-  return collection.insert({'data': data})
+  return collection.insert({'date': str(datetime.datetime.now()), 'data': data})

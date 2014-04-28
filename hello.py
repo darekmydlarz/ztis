@@ -25,12 +25,13 @@ class Data(Resource):
 class DataList(Resource):
 	def get(self):
 		dataList = list(database.find_all())
+		print(dataList)
 		return json_dump(dataList)
 
 	def post(self):
 		args = parser.parse_args()
 		data_id = database.insert(args['data'])
-		return json_dump(data_id), 201
+		return json.dumps(data_id, default=json_util.default), 201
 
 api.add_resource(Data, '/data/<string:data_id>')
 api.add_resource(DataList, '/', '/data')
