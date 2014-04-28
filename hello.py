@@ -1,7 +1,7 @@
 import sys
 import database
 from bson import json_util
-from flask import Flask, json
+from flask import Flask, Response, json
 from flask.ext.restful import reqparse, abort, Api, Resource
 
 app = Flask(__name__)
@@ -15,7 +15,7 @@ def abort_if_doesnt_exist(data_id):
 		abort(404, message = "Data {} doesn't exist".format(data_id))
 
 def json_dump(obj):
-	return json.dumps(obj, default=json_util.default)
+	return Response(json.dumps(obj, default=json_util.default), mimetype='application/json')
 
 class Data(Resource):
 	def get(self, data_id):
@@ -24,10 +24,8 @@ class Data(Resource):
 
 class DataList(Resource):
 	def get(self):
-		result = []
-		for row in database.find_all():
-			result.append(json_dump(row))
-		return result
+		dataList = list(database.find_all())
+		return json_dump(dataList)
 
 	def post(self):
 		args = parser.parse_args()
