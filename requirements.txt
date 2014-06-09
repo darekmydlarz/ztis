@@ -5,7 +5,6 @@ Flask-RESTful==0.2.12
 Jinja2==2.7.2
 numpy==1.8.1
 MarkupSafe==0.19
-Pycluster==1.52
 Werkzeug==0.9.4
 aniso8601==0.82
 argparse==1.2.1
