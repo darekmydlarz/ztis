@@ -51,12 +51,7 @@ class Consume(Resource):
 		print request.data
 		database.insertEvents(json.loads(request.data))
 		print "po request"
-		#parser.add_argument('address', type = str)
-		# address must be given from other proccess of application
-		# e.g. run one on port 5000, another on 3000 and communicate each other
-		#address = parser.parse_args()['address']
-		#eventData = json.loads(urllib2.urlopen(address).read())
-		#eventId = database.insertEvents(eventData)
+		request = requests.post("http://immense-refuge-2812.herokuapp.com/results", data=k_means())
 		return {}, 201
 
 	def get(self):
@@ -68,6 +63,9 @@ class Consume(Resource):
 
 class Result(Resource):
 	def get(self):
+		return k_means()
+
+def k_means():
 		dataList = list(database.find_all())
 		vectors = []
 		uuids = []
@@ -84,15 +82,10 @@ class Result(Resource):
 		result = vectors
 		labels, error, nfound = Pycluster.kcluster(vectors, 3)
 
-		print labels
-		print error
-		print nfound
-		print uuids
 		classes = []
 		for label in labels:
 			classes.append(numpy.asscalar(label))
 		result = dict(zip(uuids,classes))
-		print result
 		return json_dump(result)
 
 api.add_resource(Data, '/data/<string:data_id>')
