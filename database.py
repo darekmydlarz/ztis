@@ -26,6 +26,7 @@ def find(data_id):
 def insert(data):
   return collection.insert({'date': str(datetime.datetime.now()), 'data': data})
 
-def insertEvents(events):
-  for e in events:
-  	collection.insert(e)
+def insertEvents(jsonData):
+  uuid = jsonData["uuid"]
+  events = jsonData["series"]
+  collection.insert({'uuid': uuid, 'events': events})

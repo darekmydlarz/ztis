@@ -3,12 +3,15 @@ import database
 import mock
 from bson import json_util
 import flask
+import requests
 from flask import Flask, Response
 from flask.ext.restful import reqparse, abort, Api, Resource
 import urllib2, json
 
 app = Flask(__name__)
 api = Api(app)
+
+generator_url = "http://immense-refuge-2812.herokuapp.com/push/test?config=2"
 
 def abort_if_doesnt_exist(data_id):
 	if database.find(data_id) is None:
@@ -41,14 +44,26 @@ class Mock(Resource):
 
 class Consume(Resource):
 	def post(self):
-		parser = reqparse.RequestParser()
-		parser.add_argument('address', type = str)
+		print 'im here'
+		args = parser.parse_args()
+		print args
+		database.insert("test")
+		database.insert(args)
+		#parser = reqparse.RequestParser()
+		#parser.add_argument('address', type = str)
 		# address must be given from other proccess of application
 		# e.g. run one on port 5000, another on 3000 and communicate each other
-		address = parser.parse_args()['address']
-		eventData = json.loads(urllib2.urlopen(address).read())
-		eventId = database.insertEvents(eventData["events"])
+		#address = parser.parse_args()['address']
+		#eventData = json.loads(urllib2.urlopen(address).read())
+		#eventId = database.insertEvents(eventData)
 		return {}, 201
+
+	def get(self):
+		host = [{"host" : "flask-ztis.herokuapp.com", "path" : "/consume"}]
+		print json.dumps(host)
+		headers = {'content-type': 'application/json'}
+		request = requests.post(generator_url, data=json.dumps(host), headers=headers)
+		return {}, request.status_code
 
 
 api.add_resource(Data, '/data/<string:data_id>')
