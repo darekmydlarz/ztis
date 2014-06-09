@@ -60,10 +60,9 @@ class Consume(Resource):
 
 	def get(self):
 		host = [{"host" : "flask-ztis.herokuapp.com", "path" : "/consume"}]
-		print json.dumps(host)
 		headers = {'content-type': 'application/json'}
 		request = requests.post(generator_url, data=json.dumps(host), headers=headers)
-		return {}, request.status_code
+		return {}, 200
 
 
 api.add_resource(Data, '/data/<string:data_id>')
