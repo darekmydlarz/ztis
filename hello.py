@@ -4,7 +4,7 @@ import mock
 from bson import json_util
 import flask
 import requests
-from flask import Flask, Response
+from flask import Flask, Response, request
 from flask.ext.restful import reqparse, abort, Api, Resource
 import urllib2, json
 
@@ -45,12 +45,8 @@ class Mock(Resource):
 class Consume(Resource):
 	def post(self):
 		print 'im here'
-		args = parser.parse_args()
-		print args
-		print "po args"
-		database.insert("test")
-		database.insert(args)
-		#parser = reqparse.RequestParser()
+		print request.data
+		print "po request"
 		#parser.add_argument('address', type = str)
 		# address must be given from other proccess of application
 		# e.g. run one on port 5000, another on 3000 and communicate each other
