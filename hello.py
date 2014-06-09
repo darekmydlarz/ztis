@@ -59,8 +59,9 @@ class Consume(Resource):
 	def get(self):
 		request = requests.post("http://immense-refuge-2812.herokuapp.com/sample/test?config=2&timespan=10")
 		host = [{"host" : "flask-ztis.herokuapp.com", "path" : "/consume"}]
-		headers = {'content-type': 'application/json', 'Connection':'close'}
+		headers = {'content-type': 'application/json'}
 		request = requests.post(generator_url, data=json.dumps(host), headers=headers)
+		request.connection.close()
 		return {}, 200
 
 
