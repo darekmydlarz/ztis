@@ -61,8 +61,8 @@ class Consume(Resource):
 		host = [{"host" : "flask-ztis.herokuapp.com", "path" : "/consume"}]
 		headers = {'content-type': 'application/json'}
 
-		s = requests.Session()
-		s.config['keep_alive'] = False
+		s = requests.session()
+		s.keep_alive = False
 
 		request = s.post(generator_url, data=json.dumps(host), headers=headers)
 		request.connection.close()
