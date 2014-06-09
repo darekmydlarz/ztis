@@ -7,6 +7,9 @@ import requests
 from flask import Flask, Response, request
 from flask.ext.restful import reqparse, abort, Api, Resource
 import urllib2, json
+import numpy
+import Pycluster
+from collections import Counter
 
 app = Flask(__name__)
 api = Api(app)
@@ -63,11 +66,40 @@ class Consume(Resource):
 		request = requests.post(generator_url, data=json.dumps(host), headers=headers)
 		return {}, 200
 
+class Result(Resource):
+	def get(self):
+		dataList = list(database.find_all())
+		vectors = []
+		uuids = []
+		for data in dataList:
+			counter = Counter()
+			uuids.append(data['uuid'])
+			for event in data['events']:
+					counter[event['name']] += 1
+			vector = []
+			for typ in counter:
+				vector.append(counter[typ])
+			vectors.append(vector)
+
+		result = vectors
+		labels, error, nfound = Pycluster.kcluster(vectors, 3)
+
+		print labels
+		print error
+		print nfound
+		print uuids
+		classes = []
+		for label in labels:
+			classes.append(numpy.asscalar(label))
+		result = dict(zip(uuids,classes))
+		print result
+		return json_dump(result)
 
 api.add_resource(Data, '/data/<string:data_id>')
 api.add_resource(DataList, '/', '/data')
 api.add_resource(Mock, '/mock')
 api.add_resource(Consume, '/consume')
+api.add_resource(Result, '/result')
 
 if __name__ == '__main__':
     app.run(debug=True)
