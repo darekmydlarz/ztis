@@ -51,7 +51,7 @@ class Consume(Resource):
 		print request.data
 		database.insertEvents(json.loads(request.data))
 		print "po request"
-		request = requests.post("http://immense-refuge-2812.herokuapp.com/results", data=k_means())
+		req = requests.post("http://immense-refuge-2812.herokuapp.com/results", data=json.dumps(k_means()))
 		return {}, 201
 
 	def get(self):
@@ -63,30 +63,30 @@ class Consume(Resource):
 
 class Result(Resource):
 	def get(self):
-		return k_means()
+		return json_dump(k_means())
 
 def k_means():
-		dataList = list(database.find_all())
-		vectors = []
-		uuids = []
-		for data in dataList:
-			counter = Counter()
-			uuids.append(data['uuid'])
-			for event in data['events']:
-					counter[event['name']] += 1
-			vector = []
-			for typ in counter:
-				vector.append(counter[typ])
-			vectors.append(vector)
+	dataList = list(database.find_all())
+	vectors = []
+	uuids = []
+	for data in dataList:
+		counter = Counter()
+		uuids.append(data['uuid'])
+		for event in data['events']:
+				counter[event['name']] += 1
+		vector = []
+		for typ in counter:
+			vector.append(counter[typ])
+		vectors.append(vector)
 
-		result = vectors
-		labels, error, nfound = Pycluster.kcluster(vectors, 3)
+	result = vectors
+	labels, error, nfound = Pycluster.kcluster(vectors, 3)
 
-		classes = []
-		for label in labels:
-			classes.append(numpy.asscalar(label))
-		result = dict(zip(uuids,classes))
-		return json_dump(result)
+	classes = []
+	for label in labels:
+		classes.append(numpy.asscalar(label))
+	result = dict(zip(uuids,classes))
+	return result
 
 api.add_resource(Data, '/data/<string:data_id>')
 api.add_resource(DataList, '/', '/data')
