@@ -47,6 +47,7 @@ class Consume(Resource):
 		print 'im here'
 		args = parser.parse_args()
 		print args
+		print "po args"
 		database.insert("test")
 		database.insert(args)
 		#parser = reqparse.RequestParser()
