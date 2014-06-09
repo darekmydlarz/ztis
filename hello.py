@@ -46,7 +46,7 @@ class Consume(Resource):
 	def post(self):
 		print 'im here'
 		print request.data
-		database.insertEvents(request.data)
+		database.insertEvents(json.loads(request.data))
 		print "po request"
 		#parser.add_argument('address', type = str)
 		# address must be given from other proccess of application
